@@ -24,6 +24,14 @@ def init_db(conn):
         )
     ''')
 
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS reminder (
+            tg_id_          TEXT,
+            group_          TEXT,
+            time_           TEXT
+        )
+    ''')
+
     conn.commit()
 
 
@@ -42,3 +50,18 @@ def get_lessons(conn, group, day):
         (res,) = cost
         return res
 
+
+@ensure_connection
+def add_reminder(conn, tg_id, group, time):
+    c = conn.cursor()
+
+    c.execute('INSERT into reminder (tg_id_, group_, time_) VALUES (?, ?, ?)', (tg_id, group, time))
+    conn.commit()
+
+
+@ensure_connection
+def get_all_reminders(conn):
+    c = conn.cursor()
+
+    c.execute('SELECT tg_id_, group_, time_ FROM reminder')
+    return c.fetchall()
